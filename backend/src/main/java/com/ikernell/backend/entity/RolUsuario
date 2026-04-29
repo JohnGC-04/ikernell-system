@@ -1,0 +1,7 @@
+package com.ikernel.backend.entity;
+
+public enum RolUsuario {
+    COORDINADOR,
+    LIDER,
+    DESARROLLADOR
+    }

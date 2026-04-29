@@ -1,0 +1,44 @@
+package com.ikernell.backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "usuario")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idUsuario;
+
+    private String nombre;
+    private String apellido;
+
+    @Column(unique = true)
+    private String identificacion;
+
+    @Column(unique = true)
+    private String email;
+
+    private String password;
+    private String direccion;
+
+    private LocalDate fechaNacimiento;
+
+    private Boolean estado = true;
+
+    private String foto;
+
+    @Enumerated(EnumType.STRING)
+    private RolUsuario rol;
+    
+
+}
+
