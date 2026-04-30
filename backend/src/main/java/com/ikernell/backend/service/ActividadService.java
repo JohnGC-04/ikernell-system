@@ -48,6 +48,13 @@ public class ActividadService {
                 .collect(Collectors.toList());
     }
 
+    public List<ActividadDTO> listarTodas() {
+        return actividadRepository.findAll()
+                .stream()
+                .map(this::convertirADto)
+                .collect(Collectors.toList());
+    }
+
     private ActividadDTO convertirADto(Actividad a) {
         ActividadDTO dto = new ActividadDTO();
         dto.setIdActividad(a.getIdActividad());
