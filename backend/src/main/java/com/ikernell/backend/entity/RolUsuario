@@ -4,6 +4,4 @@ public enum RolUsuario {
     COORDINADOR,
     LIDER,
     DESARROLLADOR
-    }
-
-    
+}

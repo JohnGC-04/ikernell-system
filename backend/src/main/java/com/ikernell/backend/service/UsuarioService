@@ -15,12 +15,33 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public List<Usuario> listar() {
-        return usuarioRepository.findAll();
+    public List<UsuarioDTO> listar() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(this::convertirADto)
+                .toList();
     }
 
-    public Usuario guardar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public UsuarioDTO guardar(Usuario usuario) {
+        // Lógica de negocio: Validar si el email ya existe antes de guardar
+        if(usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new RuntimeException("El email ya está registrado"); 
+        }
+        
+        Usuario guardado = usuarioRepository.save(usuario);
+        return convertirADto(guardado);
+    }
+
+    // Método privado para no repetir código (DRY - Don't Repeat Yourself)
+    private UsuarioDTO convertirADto(Usuario u) {
+        return new UsuarioDTO(
+            u.getIdUsuario(),
+            u.getNombre(),
+            u.getApellido(),
+            u.getEmail(),
+            u.getIdentificacion(),
+            u.getRol(),
+            u.getEstado()
+        );
     }
 }
-
