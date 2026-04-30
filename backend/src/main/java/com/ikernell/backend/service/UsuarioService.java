@@ -1,10 +1,12 @@
 package com.ikernell.backend.service;
 
-import com.ikernell.backend.entity.Usuario;
-import com.ikernell.backend.repository.UsuarioRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.ikernell.backend.dto.UsuarioDTO;
+import com.ikernell.backend.entity.Usuario;
+import com.ikernell.backend.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
@@ -34,14 +36,15 @@ public class UsuarioService {
 
     // Método privado para no repetir código (DRY - Don't Repeat Yourself)
     private UsuarioDTO convertirADto(Usuario u) {
-        return new UsuarioDTO(
-            u.getIdUsuario(),
-            u.getNombre(),
-            u.getApellido(),
-            u.getEmail(),
-            u.getIdentificacion(),
-            u.getRol(),
-            u.getEstado()
-        );
-    }
+    UsuarioDTO dto = new UsuarioDTO();
+    dto.setIdUsuario(u.getIdUsuario());
+    dto.setNombre(u.getNombre());
+    dto.setApellido(u.getApellido());
+    dto.setEmail(u.getEmail());
+    dto.setIdentificacion(u.getIdentificacion());
+    // Asegúrate de que el tipo de dato coincida (String o RolUsuario)
+    dto.setRol(u.getRol() != null ? u.getRol().toString() : null); 
+    dto.setEstado(u.getEstado() != null ? u.getEstado().toString() : null);
+    return dto;
+}
 }
