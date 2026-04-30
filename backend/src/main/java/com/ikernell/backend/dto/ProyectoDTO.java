@@ -15,4 +15,7 @@ public class ProyectoDTO {
     // Datos simplificados del Líder (HU-003)
     private Long idLider;
     private String nombreLider;
+
+    // Costo total del proyecto (suma de costos estimados de actividades)
+    private Double costoTotal;
 }

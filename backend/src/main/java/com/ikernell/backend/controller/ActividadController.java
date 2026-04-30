@@ -31,4 +31,11 @@ public class ActividadController {
         // similar a como hicimos en EtapaService
         return ResponseEntity.ok(actividadService.listarPorEtapa(idEtapa));
     }
+
+    // Agrega este método para que el navegador (GET) pueda entrar
+    @GetMapping
+    public ResponseEntity<List<ActividadDTO>> listarTodas() {
+        // Necesitas crear 'listarTodas' en tu ActividadService también
+        return ResponseEntity.ok(actividadService.listarTodas());
+    }
 }
