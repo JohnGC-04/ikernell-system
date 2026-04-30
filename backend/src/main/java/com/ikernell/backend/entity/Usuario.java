@@ -1,43 +1,52 @@
 package com.ikernell.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.Data;
 import java.time.LocalDate;
 
-@Data
 @Entity
-@Table(name = "usuario")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Table(name = "usuarios")
+@Data
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario") // Forzamos el nombre exacto de tu script SQL
     private Long idUsuario;
 
+    // Información de Acceso (RF-002, RNF-001)
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password; // Se guardará con BCrypt (RNF-003)
+
+    @Column(nullable = false)
+    private String rol; // COORDINADOR, LIDER, DESARROLLADOR
+
+    @Column(nullable = false)
+    private String estado; // "ACTIVO", "INACTIVO" (RF-045)
+
+    // Información Personal (RF-047)
+    @Column(nullable = false)
     private String nombre;
+
+    @Column(nullable = false)
     private String apellido;
 
     @Column(unique = true, nullable = false)
     private String identificacion;
 
-    @Column(unique = true, nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
     private String direccion;
+    
+    private String telefono;
 
-    @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    private Boolean estado = true;
+    // Gestión de Perfil y Multimedia (RF-048)
+    private String foto; // Ruta o URL de la imagen
 
-    private String foto;
-
-    @Enumerated(EnumType.STRING) // Convierte el Enum en String para Postgres
-    @Column(name = "rol", nullable = false)
-    private RolUsuario rol;
+    // Información Profesional (HU-002)
+    private String perfilProfesional; // Descripción breve
+    
+    private String especialidad; // Ej: Backend, Frontend, QA
 }
