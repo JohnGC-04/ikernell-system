@@ -24,7 +24,7 @@ public class Usuario {
     private String rol; // COORDINADOR, LIDER, DESARROLLADOR
 
     @Column(nullable = false)
-    private String estado; // "ACTIVO", "INACTIVO" (RF-045)
+    private String estado; // "ACTIVO", "INACTIVO"
 
     // Información Personal (RF-047)
     @Column(nullable = false)
@@ -42,10 +42,10 @@ public class Usuario {
 
     private LocalDate fechaNacimiento;
 
-    // Gestión de Perfil y Multimedia (RF-048)
+    // Gestión de Perfil y Multimedia
     private String foto; // Ruta o URL de la imagen
 
-    // Información Profesional (HU-002)
+    // Información Profesional
     private String perfilProfesional; // Descripción breve
     
     private String especialidad; // Ej: Backend, Frontend, QA
