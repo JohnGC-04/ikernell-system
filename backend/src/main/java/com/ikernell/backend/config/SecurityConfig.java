@@ -7,28 +7,39 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.ikernell.backend.security.JwtFilter;
+
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    private final JwtFilter jwtFilter;
+
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Permitimos usuarios Y proyectos temporalmente para pruebas
-                        .requestMatchers("/api/usuarios/**").permitAll()
-                        .requestMatchers("/api/proyectos/**").permitAll() // permite todas las rutas de proyectos, sin autenticación
-                        .requestMatchers("/api/etapas/**").permitAll()
-                        .requestMatchers("/api/etapas/**").permitAll()
-                        .requestMatchers("/api/actividades/**").permitAll()
-                        .anyRequest().authenticated());
+                        .requestMatchers("/api/auth/**").permitAll() // Permitir acceso a endpoints de autenticación
+                        .requestMatchers("/api/usuarios/**").permitAll() // Acceso Abierto para pruebas
+                        .anyRequest().authenticated() // PROYECTOS, ETAPAS Y ACTIVIDADES AHORA REQUIEREN TOKEN
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agregar el filtro JWT antes del filtro de autenticación de Spring Security
+
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
