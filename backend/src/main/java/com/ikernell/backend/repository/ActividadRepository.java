@@ -12,4 +12,6 @@ public interface ActividadRepository extends JpaRepository<Actividad, Long> {
     
     // Para ver qué tareas tiene asignadas un desarrollador (HU-005)
     List<Actividad> findByDesarrolladorIdUsuario(Long idUsuario);
+
+    List<Actividad> findByDesarrolladorEmail(String email);
 }

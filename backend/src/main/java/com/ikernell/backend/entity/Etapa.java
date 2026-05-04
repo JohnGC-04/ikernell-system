@@ -2,6 +2,7 @@ package com.ikernell.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Entity
 @Table(name = "etapas")
@@ -20,4 +21,7 @@ public class Etapa {
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
+
+    @OneToMany (mappedBy = "etapa", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Actividad> actividades;
 }

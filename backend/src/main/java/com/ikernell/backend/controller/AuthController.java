@@ -16,6 +16,7 @@ public class AuthController {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
     public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
@@ -28,7 +29,8 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         if (passwordEncoder.matches(loginRequest.getPassword(), usuario.getPassword())) {
-            String token = jwtUtil.generateToken(usuario.getEmail());
+            // CAMBIO: Pasa 'usuario' (el objeto), no 'usuario.getEmail()'
+            String token = jwtUtil.generateToken(usuario);
             return Map.of("token", token);
         } else {
             throw new RuntimeException("Credenciales incorrectas");
