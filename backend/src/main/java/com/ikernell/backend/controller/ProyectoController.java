@@ -5,6 +5,7 @@ import com.ikernell.backend.entity.Proyecto;
 import com.ikernell.backend.service.ProyectoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,5 +28,11 @@ public class ProyectoController {
     @GetMapping
     public ResponseEntity<List<ProyectoDTO>> listar() {
         return ResponseEntity.ok(proyectoService.listarTodos());
+    }
+
+    @PreAuthorize("hasRole('LIDER')")
+    @GetMapping("/{id}/costo-total")
+    public ResponseEntity<Double> obtenerCostoTotal(@PathVariable Long id) {
+        return ResponseEntity.ok(proyectoService.calcularCostoTotal(id));
     }
 }

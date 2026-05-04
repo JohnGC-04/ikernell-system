@@ -1,8 +1,10 @@
 package com.ikernell.backend.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "proyectos")
@@ -29,4 +31,9 @@ public class Proyecto {
     @ManyToOne
     @JoinColumn(name = "id_lider", nullable = false)
     private Usuario lider;
+
+    private Double presupuesto;
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Etapa> etapas;
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -37,5 +38,11 @@ public class ActividadController {
     public ResponseEntity<List<ActividadDTO>> listarTodas() {
         // Necesitas crear 'listarTodas' en tu ActividadService también
         return ResponseEntity.ok(actividadService.listarTodas());
+    }
+
+    @GetMapping("/mis-tareas")
+    public ResponseEntity<List<ActividadDTO>> listarMisActividades(Principal principal) {
+        // principal.getName() nos da el email del usuario logueado
+        return ResponseEntity.ok(actividadService.listarPorEmailDesarrollador(principal.getName()));
     }
 }
