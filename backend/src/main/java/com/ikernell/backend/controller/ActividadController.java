@@ -23,8 +23,10 @@ public class ActividadController {
     }
 
     @PostMapping
-    public ResponseEntity<ActividadDTO> crear(@RequestBody Actividad actividad) {
-        return new ResponseEntity<>(actividadService.guardar(actividad), HttpStatus.CREATED);
+    @PreAuthorize("hasAnyRole('LIDER', 'COORDINADOR')")
+    public ResponseEntity<ActividadDTO> crear(@RequestBody ActividadDTO dto) {
+        // Cambia service.guardar(dto) por service.guardarActividad(dto)
+        return new ResponseEntity<>(actividadService.guardarActividad(dto), HttpStatus.CREATED);
     }
 
     // Endpoint para ver actividades de una etapa específica

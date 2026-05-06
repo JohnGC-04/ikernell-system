@@ -1,5 +1,7 @@
 package com.ikernell.backend.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,4 +29,9 @@ public class Actividad {
     @ManyToOne
     @JoinColumn(name = "id_desarrollador", nullable = false)
     private Usuario desarrollador;
+
+    private LocalDateTime fechaEntregaPlaneada;
+
+    
+
 }
