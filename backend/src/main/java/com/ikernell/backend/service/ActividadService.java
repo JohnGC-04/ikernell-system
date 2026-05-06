@@ -1,5 +1,6 @@
 package com.ikernell.backend.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,14 +23,15 @@ public class ActividadService {
     private final ActividadRepository actividadRepository;
     private final EtapaRepository etapaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final ProyectoRepository proyectoRepository; // <--- 1. Declarar
+    private final ProyectoRepository proyectoRepository; // <--- 1. Declarar el repositorio
 
     public ActividadService(ActividadRepository actividadRepository, EtapaRepository etapaRepository,
             UsuarioRepository usuarioRepository, ProyectoRepository proyectoRepository) {
         this.actividadRepository = actividadRepository;
         this.etapaRepository = etapaRepository;
         this.usuarioRepository = usuarioRepository;
-        this.proyectoRepository = proyectoRepository; // <--- 2. Inicializar
+        this.proyectoRepository = proyectoRepository; // <--- 2. Inicializar el repositorio en el constructor
+
     }
 
     public ActividadDTO guardarActividad(ActividadDTO dto) {
@@ -117,21 +119,23 @@ public class ActividadService {
     }
 
     private void actualizarEstadosSuperiores(Etapa etapa) {
-        // 1. Verificar si todas las actividades de la etapa están "Terminado"
+        // 1. Verificar actividades de la etapa
         boolean todasActividadesListas = etapa.getActividades().stream()
                 .allMatch(a -> "Terminado".equalsIgnoreCase(a.getEstado()));
 
         if (todasActividadesListas) {
             etapa.setEstado("Finalizada");
+            etapa.setFechaFinReal(LocalDateTime.now()); // <--- AUDITORÍA DE ETAPA
             etapaRepository.save(etapa);
 
-            // 2. Si la etapa se finalizó, verificar si el proyecto también debe finalizar
+            // 2. Verificar etapas del proyecto
             Proyecto proyecto = etapa.getProyecto();
             boolean todasEtapasListas = proyecto.getEtapas().stream()
                     .allMatch(e -> "Finalizada".equalsIgnoreCase(e.getEstado()));
 
             if (todasEtapasListas) {
                 proyecto.setEstado("Completado");
+                proyecto.setFechaFinReal(LocalDateTime.now()); // <--- AUDITORÍA DE PROYECTO
                 proyectoRepository.save(proyecto);
             }
         }
