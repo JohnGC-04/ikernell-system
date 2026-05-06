@@ -3,6 +3,9 @@ package com.ikernell.backend.controller;
 import com.ikernell.backend.dto.ActividadDTO;
 import com.ikernell.backend.entity.Actividad;
 import com.ikernell.backend.service.ActividadService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +27,7 @@ public class ActividadController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('LIDER', 'COORDINADOR')")
-    public ResponseEntity<ActividadDTO> crear(@RequestBody ActividadDTO dto) {
-        // Cambia service.guardar(dto) por service.guardarActividad(dto)
+    public ResponseEntity<ActividadDTO> crear(@Valid @RequestBody ActividadDTO dto) {
         return new ResponseEntity<>(actividadService.guardarActividad(dto), HttpStatus.CREATED);
     }
 
