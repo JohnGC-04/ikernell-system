@@ -2,6 +2,8 @@ package com.ikernell.backend.dto;
 
 import lombok.Data;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 public class UsuarioDTO {

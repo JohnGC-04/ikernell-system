@@ -2,6 +2,8 @@ package com.ikernell.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,4 +26,15 @@ public class Etapa {
 
     @OneToMany (mappedBy = "etapa", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Actividad> actividades;
+
+    public void setEstado(String string) {
+        throw new UnsupportedOperationException("Unimplemented method 'setEstado'");
+    }
+
+    public String getEstado() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getEstado'");
+    }
+
+    private LocalDateTime fechaFinReal;
 }

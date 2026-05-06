@@ -4,6 +4,7 @@ package com.ikernell.backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -36,4 +37,8 @@ public class Proyecto {
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Etapa> etapas;
+
+    private String categoria; // Ej: "Desarrollo de Software", "Construcción", "Investigación"
+
+    private LocalDateTime fechaFinReal;
 }
