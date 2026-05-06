@@ -5,6 +5,7 @@ import com.ikernell.backend.entity.Actividad;
 import com.ikernell.backend.service.ActividadService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -45,4 +46,19 @@ public class ActividadController {
         // principal.getName() nos da el email del usuario logueado
         return ResponseEntity.ok(actividadService.listarPorEmailDesarrollador(principal.getName()));
     }
+
+    @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasAnyRole('DESARROLLADOR', 'LIDER', 'COORDINADOR')")
+    public ResponseEntity<ActividadDTO> actualizarEstado(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+
+        String nuevoEstado = body.get("estado");
+        if (nuevoEstado == null) {
+            throw new RuntimeException("El campo 'estado' es obligatorio");
+        }
+
+        return ResponseEntity.ok(actividadService.cambiarEstadoActividad(id, nuevoEstado));
+    }
+
 }

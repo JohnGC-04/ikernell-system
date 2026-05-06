@@ -1,5 +1,10 @@
 package com.ikernell.backend.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.ikernell.backend.dto.ActividadDTO;
 import com.ikernell.backend.entity.Actividad;
 import com.ikernell.backend.entity.Etapa;
@@ -10,13 +15,6 @@ import com.ikernell.backend.repository.ActividadRepository;
 import com.ikernell.backend.repository.EtapaRepository;
 import com.ikernell.backend.repository.ProyectoRepository;
 import com.ikernell.backend.repository.UsuarioRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-
-import org.springframework.stereotype.Service;
-
 
 @Service
 public class ActividadService {
@@ -45,27 +43,28 @@ public class ActividadService {
                 .sum();
 
         if (costoActual + dto.getCostoEstimado() > proyecto.getPresupuesto()) {
-            throw new PresupuestoExcedidoException("Presupuesto insuficiente. Restante: $" + (proyecto.getPresupuesto() - costoActual));
+            throw new PresupuestoExcedidoException(
+                    "Presupuesto insuficiente. Restante: $" + (proyecto.getPresupuesto() - costoActual));
 
         }
 
-        //Convertir y guardar la actividad
+        // Convertir y guardar la actividad
         Actividad actividad = convertirAEntidad(dto);
         return convertirADto(actividadRepository.save(actividad));
-}
+    }
 
-// 3. Método para convertir DTO a Entidad (Soluciona el error de undefined)
+    // 3. Método para convertir DTO a Entidad (Soluciona el error de undefined)
     private Actividad convertirAEntidad(ActividadDTO dto) {
         Actividad a = new Actividad();
         a.setDescripcion(dto.getDescripcion());
         a.setEstado(dto.getEstado());
         a.setCostoEstimado(dto.getCostoEstimado());
-        
+
         Etapa etapa = etapaRepository.findById(dto.getIdEtapa())
                 .orElseThrow(() -> new RuntimeException("Etapa no encontrada"));
         Usuario dev = usuarioRepository.findById(dto.getIdDesarrollador())
                 .orElseThrow(() -> new RuntimeException("Desarrollador no encontrado"));
-                
+
         a.setEtapa(etapa);
         a.setDesarrollador(dev);
         return a;
@@ -117,5 +116,42 @@ public class ActividadService {
                 .collect(Collectors.toList());
     }
 
+    private void actualizarEstadosSuperiores(Etapa etapa) {
+        // 1. Verificar si todas las actividades de la etapa están "Terminado"
+        boolean todasActividadesListas = etapa.getActividades().stream()
+                .allMatch(a -> "Terminado".equalsIgnoreCase(a.getEstado()));
+
+        if (todasActividadesListas) {
+            etapa.setEstado("Finalizada");
+            etapaRepository.save(etapa);
+
+            // 2. Si la etapa se finalizó, verificar si el proyecto también debe finalizar
+            Proyecto proyecto = etapa.getProyecto();
+            boolean todasEtapasListas = proyecto.getEtapas().stream()
+                    .allMatch(e -> "Finalizada".equalsIgnoreCase(e.getEstado()));
+
+            if (todasEtapasListas) {
+                proyecto.setEstado("Completado");
+                proyectoRepository.save(proyecto);
+            }
+        }
+    }
+
+    public ActividadDTO cambiarEstadoActividad(Long idActividad, String nuevoEstado) {
+        // 1. Buscar la actividad
+        Actividad actividad = actividadRepository.findById(idActividad)
+                .orElseThrow(() -> new RuntimeException("Actividad no encontrada"));
+
+        // 2. Actualizar estado
+        actividad.setEstado(nuevoEstado);
+        Actividad guardada = actividadRepository.save(actividad);
+
+        // 3. Disparar lógica de workflow si se termina la tarea
+        if ("Terminado".equalsIgnoreCase(nuevoEstado)) {
+            actualizarEstadosSuperiores(actividad.getEtapa());
+        }
+
+        return convertirADto(guardada);
+    }
 
 }
