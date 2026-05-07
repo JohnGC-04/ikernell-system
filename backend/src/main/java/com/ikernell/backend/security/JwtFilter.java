@@ -25,6 +25,12 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/"); // No filtrar peticiones de autenticación
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
@@ -32,20 +38,20 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            
+
             if (jwtUtil.validateToken(token)) {
                 String email = jwtUtil.extractEmail(token);
                 // 1. Extraemos el rol que guardamos en el JwtUtil
-                String rol = jwtUtil.extractRol(token); 
+                String rol = jwtUtil.extractRol(token);
 
                 // 2. Creamos la autoridad con el prefijo ROLE_ (estándar de Spring Security)
-                List<SimpleGrantedAuthority> authorities = 
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rol));
+                List<SimpleGrantedAuthority> authorities = Collections
+                        .singletonList(new SimpleGrantedAuthority("ROLE_" + rol));
 
                 // 3. Pasamos las autoridades al token de autenticación
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         email, null, authorities);
-                
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
