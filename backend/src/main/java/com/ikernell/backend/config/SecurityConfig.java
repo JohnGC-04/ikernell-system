@@ -9,7 +9,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 import com.ikernell.backend.security.JwtFilter;
 
@@ -29,38 +33,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilitar CORS con la configuración definida
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Rutas Públicas
                         .requestMatchers("/api/auth/**").permitAll()
-
-                        // 2. Reglas de Roles (De lo más específico a lo más general)
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Registro abierto
-                        .requestMatchers("/api/usuarios/**").hasRole("COORDINADOR")
-
-                        .requestMatchers("/api/proyectos/**").hasAnyRole("LIDER", "COORDINADOR")
-                        .requestMatchers("/api/etapas/**").hasAnyRole("LIDER", "COORDINADOR")
-
-                        // Los tres roles pueden interactuar con actividades (según sus métodos)
-                        .requestMatchers("/api/actividades/**").hasAnyRole("LIDER", "COORDINADOR", "DESARROLLADOR")
-
-                        // 4. Permitir acceso a Swagger UI sin autenticación
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html")
-                        .permitAll()
-
-                        // 3. Bloqueo total para cualquier otra ruta
+                        .permitAll() // Swagger abierto
+                        .requestMatchers("/api/usuarios/**").hasRole("COORDINADOR")
+                        .requestMatchers("/api/proyectos/**").hasAnyRole("LIDER", "COORDINADOR")
+                        .requestMatchers("/api/etapas/**").hasAnyRole("LIDER", "COORDINADOR")
+                        .requestMatchers("/api/actividades/**").hasAnyRole("LIDER", "COORDINADOR", "DESARROLLADOR")
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agregar el filtro JWT antes del filtro de autenticación
 
         return http.build();
     }
 
+    // Bean para permitir peticiones desde el Frontend (Svelte)
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public CorsConfigurationSource corsConfigurationSource() { // Configuración CORS personalizada
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Puerto por defecto de Vite/Svelte
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));// Permitir el header de autorización para JWT
+        configuration.setAllowCredentials(true); // Permitir cookies (si es necesario)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(); //  Registrar la configuración CORS para todas las rutas
+        source.registerCorsConfiguration("/**", configuration); // Aplicar esta configuración a todas las rutas
+        return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() { // Bean para encriptar contraseñas
+        return new BCryptPasswordEncoder(); // Usamos BCrypt para hashing de contraseñas
     }
 }
