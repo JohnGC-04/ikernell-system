@@ -31,7 +31,5 @@ public class Actividad {
     private Usuario desarrollador;
 
     private LocalDateTime fechaEntregaPlaneada;
-
-    
-
+    private LocalDateTime fechaEntregaReal;
 }

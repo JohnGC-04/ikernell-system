@@ -2,8 +2,13 @@ package com.ikernell.backend.controller;
 
 import com.ikernell.backend.dto.ProyectoDTO;
 import com.ikernell.backend.entity.Actividad;
+import com.ikernell.backend.entity.AuditoriaPresupuesto;
 import com.ikernell.backend.entity.Proyecto;
 import com.ikernell.backend.service.ProyectoService;
+import com.ikernell.backend.repository.AuditoriaRepository;
+
+import jakarta.validation.Valid;
+
 import com.ikernell.backend.repository.ProyectoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,25 +19,35 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
-
-
-
-
 @RestController
 @RequestMapping("/api/proyectos")
 public class ProyectoController {
 
     private final ProyectoService proyectoService;
     private final ProyectoRepository proyectoRepository;
+    private final AuditoriaRepository auditoriaRepository;
 
     public ProyectoController(ProyectoService proyectoService) {
         this.proyectoService = proyectoService;
         this.proyectoRepository = null;
+        this.auditoriaRepository = null;
     }
 
     @PostMapping
-    public ResponseEntity<ProyectoDTO> crear(@RequestBody Proyecto proyecto) {
-        return new ResponseEntity<>(proyectoService.guardar(proyecto), HttpStatus.CREATED);
+    @PreAuthorize("hasRole('COORDINADOR')") // Solo el coordinador crea proyectos
+    public ResponseEntity<ProyectoDTO> crearProyecto(@Valid @RequestBody ProyectoDTO dto) {
+        return new ResponseEntity<>(proyectoService.guardar(dto), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('LIDER', 'COORDINADOR')")
+    public ResponseEntity<ProyectoDTO> actualizarProyecto(
+            @PathVariable Long id,
+            @Valid @RequestBody ProyectoDTO dto) {
+        String emailAutor = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+
+        return ResponseEntity.ok(proyectoService.actualizar(id, dto, emailAutor));
     }
 
     @GetMapping
@@ -49,20 +64,15 @@ public class ProyectoController {
     @PreAuthorize("hasAnyRole('LIDER', 'COORDINADOR')")
     @GetMapping("/{id}/balance")
     public ResponseEntity<Map<String, Object>> obtenerBalanceProyecto(@PathVariable Long id) {
-        Proyecto proyecto = proyectoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
-
-        double costoActual = proyecto.getEtapas().stream()
-                .flatMap(etapa -> etapa.getActividades().stream())
-                .mapToDouble(Actividad::getCostoEstimado)
-                .sum();
-
-        Map<String, Object> balance = new HashMap<>();
-        balance.put("nombreProyecto", proyecto.getNombre());
-        balance.put("presupuestoTotal", proyecto.getPresupuesto());
-        balance.put("costoConsumido", costoActual);
-        balance.put("saldoDisponible", proyecto.getPresupuesto() - costoActual);
-
+        // LLAMAMOS AL SERVICE, NO AL REPOSITORY
+        Map<String, Object> balance = proyectoService.obtenerBalanceCuentas(id);
         return ResponseEntity.ok(balance);
+    }
+
+    @GetMapping("/{id}/historial-financiero")
+    @PreAuthorize("hasRole('COORDINADOR')")
+    public ResponseEntity<List<AuditoriaPresupuesto>> obtenerHistorial(@PathVariable Long id) {
+        // Delegamos la búsqueda al Service para mantener limpio el Controller
+        return ResponseEntity.ok(proyectoService.obtenerHistorialFinanciero(id));
     }
 }

@@ -20,8 +20,9 @@ public class Usuario {
     @Column(nullable = false)
     private String password; // Se guardará con BCrypt (RNF-003)
 
+    @Enumerated(EnumType.STRING) // Guarda el nombre del enum ("LIDER") como texto en la DB
     @Column(nullable = false)
-    private String rol; // COORDINADOR, LIDER, DESARROLLADOR
+    private RolUsuario rol;
 
     @Column(nullable = false)
     private String estado; // "ACTIVO", "INACTIVO"
@@ -37,7 +38,7 @@ public class Usuario {
     private String identificacion;
 
     private String direccion;
-    
+
     private String telefono;
 
     private LocalDate fechaNacimiento;
@@ -47,6 +48,6 @@ public class Usuario {
 
     // Información Profesional
     private String perfilProfesional; // Descripción breve
-    
+
     private String especialidad; // Ej: Backend, Frontend, QA
 }
