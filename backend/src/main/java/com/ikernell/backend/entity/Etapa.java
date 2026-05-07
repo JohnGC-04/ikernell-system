@@ -32,7 +32,7 @@ public class Etapa {
     }
 
     public String getEstado() {
-        // TODO Auto-generated method stub
+        // Este método se puede implementar para calcular el estado de la etapa basado en el estado de sus actividades
         throw new UnsupportedOperationException("Unimplemented method 'getEstado'");
     }
 

@@ -3,6 +3,7 @@ package com.ikernell.backend.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -36,8 +37,20 @@ public class ProyectoDTO {
 
     private Double costoTotal; // Costo total del proyecto (suma de costos estimados de actividades)
     private String categoria; // Ej: "Desarrollo de Software", "Construcción", "Investigación"
-    private LocalDateTime fechaInicio; // Fecha de inicio planeada
-    private LocalDateTime fechaFin; // Fecha de fin planeada
+    private LocalDate fechaInicio; // Fecha de inicio planeada
+    private LocalDate fechaFin; // Fecha de fin planeada
+
+    private String estadoProyecto; // "PLANIFICACION", "EJECUCION", "FINALIZADO", "INHABILITADO"
+    private String estadoEtapas; // "EN TIEMPO", "ATRASADO", "FINALIZADO"
+    private String estadoActividades; // "EN TIEMPO", "ATRASADO", "FINALIZADO"
+
+    private LocalDateTime fechaCreacion; // Fecha de creación del proyecto
+    private LocalDateTime fechaUltimaActualizacion; // Fecha de la última actualización del proyecto
+    private LocalDateTime fechaFinRealEtapas; // Fecha de fin real calculada a partir de las etapas
+    private LocalDateTime fechaFinRealActividades; // Fecha de fin real calculada a partir de las actividades
+    private LocalDateTime fechaFinRealProyecto; // Fecha de fin real calculada a partir de la fecha de fin real de las etapas y actividades
+    
+    private String motivoCambio; // Motivo del último cambio (para auditoría)
 
 }
 

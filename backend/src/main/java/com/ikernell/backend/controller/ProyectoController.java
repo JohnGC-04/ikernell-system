@@ -2,8 +2,10 @@ package com.ikernell.backend.controller;
 
 import com.ikernell.backend.dto.ProyectoDTO;
 import com.ikernell.backend.entity.Actividad;
+import com.ikernell.backend.entity.AuditoriaPresupuesto;
 import com.ikernell.backend.entity.Proyecto;
 import com.ikernell.backend.service.ProyectoService;
+import com.ikernell.backend.repository.AuditoriaRepository;
 
 import jakarta.validation.Valid;
 
@@ -23,10 +25,12 @@ public class ProyectoController {
 
     private final ProyectoService proyectoService;
     private final ProyectoRepository proyectoRepository;
+    private final AuditoriaRepository auditoriaRepository;
 
     public ProyectoController(ProyectoService proyectoService) {
         this.proyectoService = proyectoService;
         this.proyectoRepository = null;
+        this.auditoriaRepository = null;
     }
 
     @PostMapping
@@ -40,7 +44,10 @@ public class ProyectoController {
     public ResponseEntity<ProyectoDTO> actualizarProyecto(
             @PathVariable Long id,
             @Valid @RequestBody ProyectoDTO dto) {
-        return ResponseEntity.ok(proyectoService.actualizar(id, dto));
+        String emailAutor = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+
+        return ResponseEntity.ok(proyectoService.actualizar(id, dto, emailAutor));
     }
 
     @GetMapping
@@ -60,5 +67,12 @@ public class ProyectoController {
         // LLAMAMOS AL SERVICE, NO AL REPOSITORY
         Map<String, Object> balance = proyectoService.obtenerBalanceCuentas(id);
         return ResponseEntity.ok(balance);
+    }
+
+    @GetMapping("/{id}/historial-financiero")
+    @PreAuthorize("hasRole('COORDINADOR')")
+    public ResponseEntity<List<AuditoriaPresupuesto>> obtenerHistorial(@PathVariable Long id) {
+        // Delegamos la búsqueda al Service para mantener limpio el Controller
+        return ResponseEntity.ok(proyectoService.obtenerHistorialFinanciero(id));
     }
 }

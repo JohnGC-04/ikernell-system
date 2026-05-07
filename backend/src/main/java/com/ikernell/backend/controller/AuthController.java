@@ -28,8 +28,13 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // VALIDACIÓN ADICIONAL: ¿Está activo?
+        if (!"ACTIVO".equalsIgnoreCase(usuario.getEstado())) {
+            throw new RuntimeException("El usuario se encuentra inhabilitado");
+        }
+
         if (passwordEncoder.matches(loginRequest.getPassword(), usuario.getPassword())) {
-            // CAMBIO: Pasa 'usuario' (el objeto), no 'usuario.getEmail()'
+            // Al pasar el objeto 'usuario', jwtUtil podrá hacer usuario.getRol().name()
             String token = jwtUtil.generateToken(usuario);
             return Map.of("token", token);
         } else {

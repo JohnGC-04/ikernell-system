@@ -1,13 +1,14 @@
 package com.ikernell.backend.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.ikernell.backend.dto.UsuarioDTO;
 import com.ikernell.backend.entity.Usuario;
 import com.ikernell.backend.repository.UsuarioRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
@@ -28,16 +29,21 @@ public class UsuarioService {
     }
 
     public UsuarioDTO guardar(Usuario usuario) {
-        // Validar si el email ya existe (RF-010 / HU-011)
+        // 1. Validar duplicados
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado en el sistema");
         }
-        
-        // ENCRIPTACIÓN AQUÍ
-        String encodedPassword = passwordEncoder.encode(usuario.getPassword());
-        usuario.setPassword(encodedPassword);
 
-        // El estado se recibe como String desde el controlador (ej: "ACTIVO")
+        // 2. Encriptación
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        // 3. El estado inicial por defecto si no viene (Buena práctica)
+        if (usuario.getEstado() == null) {
+            usuario.setEstado("ACTIVO");
+        }
+
+        // 4. PERSISTENCIA: Al guardar, JPA usará el @Enumerated(EnumType.STRING)
+        // que pusimos en la entidad Usuario.
         Usuario guardado = usuarioRepository.save(usuario);
         return convertirADto(guardado);
     }
@@ -49,7 +55,7 @@ public class UsuarioService {
         dto.setApellido(u.getApellido());
         dto.setEmail(u.getEmail());
         dto.setIdentificacion(u.getIdentificacion());
-        dto.setRol(u.getRol());
+        dto.setRol(u.getRol().name());
         dto.setEstado(u.getEstado());
         dto.setDireccion(u.getDireccion());
         dto.setTelefono(u.getTelefono());
@@ -57,6 +63,9 @@ public class UsuarioService {
         dto.setFoto(u.getFoto());
         dto.setPerfilProfesional(u.getPerfilProfesional());
         dto.setEspecialidad(u.getEspecialidad());
+        if (u.getRol() != null) {
+            dto.setRol(u.getRol().name());
+        }
         return dto;
     }
 }
