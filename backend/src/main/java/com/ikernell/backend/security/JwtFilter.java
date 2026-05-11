@@ -39,21 +39,26 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
-            if (jwtUtil.validateToken(token)) {
-                String email = jwtUtil.extractEmail(token);
-                // 1. Extraemos el rol que guardamos en el JwtUtil
-                String rol = jwtUtil.extractRol(token);
+            try {
+                if (jwtUtil.validateToken(token)) {
+                    String email = jwtUtil.extractEmail(token);
+                    String rol = jwtUtil.extractRol(token); // Una sola declaración
 
-                // 2. Creamos la autoridad con el prefijo ROLE_ (estándar de Spring Security)
-                List<SimpleGrantedAuthority> authorities = Collections
-                        .singletonList(new SimpleGrantedAuthority("ROLE_" + rol));
+                    // Guardamos la autoridad tal cual viene en el token ("COORDINADOR")
+                    List<SimpleGrantedAuthority> authorities = Collections
+                            .singletonList(new SimpleGrantedAuthority(rol));
 
-                // 3. Pasamos las autoridades al token de autenticación
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        email, null, authorities);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            email, null, authorities);
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                    // Logs útiles para depurar en IntelliJ/Eclipse
+                    System.out.println("AUTH SUCCESS: " + email + " con rol: " + rol);
+                }
+            } catch (Exception e) {
+                System.out.println("AUTH ERROR: Token inválido o mal formado");
             }
         }
         filterChain.doFilter(request, response);

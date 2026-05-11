@@ -33,7 +33,7 @@ public class Proyecto {
     @JoinColumn(name = "id_lider", nullable = false)
     private Usuario lider;
 
-    private Double presupuesto;
+    private Double presupuesto = 0.0;
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Etapa> etapas;

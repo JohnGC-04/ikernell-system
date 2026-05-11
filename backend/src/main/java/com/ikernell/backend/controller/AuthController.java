@@ -39,7 +39,6 @@ public class AuthController {
         return usuarioRepository.findByEmail(loginRequest.getEmail())
                 .map(usuario -> {
                     System.out.println("Hash en BD: [" + usuario.getPassword() + "]");
-                    // ... resto del código
                     if (!"ACTIVO".equalsIgnoreCase(usuario.getEstado())) {
                         return ResponseEntity.status(401).body("Usuario inhabilitado");
                     }

@@ -56,10 +56,10 @@ public class SecurityConfig {
                         .permitAll() // Swagger abierto
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
 
-                        .requestMatchers("/api/usuarios/**").hasRole("COORDINADOR")
-                        .requestMatchers("/api/proyectos/**").hasAnyRole("LIDER", "COORDINADOR")
-                        .requestMatchers("/api/etapas/**").hasAnyRole("LIDER", "COORDINADOR")
-                        .requestMatchers("/api/actividades/**").hasAnyRole("LIDER", "COORDINADOR", "DESARROLLADOR")
+                        .requestMatchers("/api/proyectos/**").authenticated()
+                        .requestMatchers("/api/usuarios/**").authenticated()
+                        .requestMatchers("/api/etapas/**").authenticated()
+                        .requestMatchers("/api/actividades/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agregar el filtro JWT antes
                                                                                          // del filtro de autenticación
