@@ -16,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -24,13 +23,9 @@ import java.util.List;
 public class ProyectoController {
 
     private final ProyectoService proyectoService;
-    private final ProyectoRepository proyectoRepository;
-    private final AuditoriaRepository auditoriaRepository;
 
     public ProyectoController(ProyectoService proyectoService) {
         this.proyectoService = proyectoService;
-        this.proyectoRepository = null;
-        this.auditoriaRepository = null;
     }
 
     @PostMapping

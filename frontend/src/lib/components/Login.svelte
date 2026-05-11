@@ -10,10 +10,13 @@
     loading = true;
     errorMessage = "";
     try {
-      const response = await axios.post("http://8080/api/auth/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/login",
+        {
+          email,
+          password,
+        },
+      );
 
       const token = response.data.token; // Extraer del objeto Map que envía Java
       localStorage.setItem("token", token); // Guardar el token en localStorage (sesión)
@@ -29,7 +32,7 @@
   }
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+<div class="min-h-screen flex items-center justify-center bg-black-100 px-4">
   <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
     <div class="text-center mb-10">
       <h1 class="text-3xl font-bold text-indigo-600">ikernell-system</h1>
@@ -38,25 +41,27 @@
 
     <form on:submit|preventDefault={handleLogin} class="space-y-6">
       <div>
-        <label class="block text-sm font-medium text-gray-700"
-          >Email Corporativo</label
-        >
+        <label for="email" class="block text-sm font-medium text-gray-700">
+          Email Corporativo
+        </label>
         <input
-          bind:value={email}
+          id="email"
           type="email"
-          required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          bind:value={email}
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Contraseña</label
-        >
+        <label for="password" class="block text-sm font-medium text-gray-700">
+          Contraseña
+        </label>
         <input
+          id="password"
           bind:value={password}
           type="password"
           required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
