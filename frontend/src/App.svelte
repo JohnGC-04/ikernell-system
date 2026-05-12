@@ -10,11 +10,13 @@
   import { writable } from "svelte/store";
   import { get } from "svelte/store";
   import "./app.css";
+  import DetalleProyecto from "./routes/DetalleProyecto.svelte";
 
   // Definimos el mapa de rutas: clave es la URL, valor es el componente
-  const routes = {
+  export const routes = {
     "/": Login,
     "/dashboard": Dashboard,
+    "/proyectos/:id": DetalleProyecto, // Ruta para el detalle del proyecto
     // Puedes añadir más rutas aquí: "/proyectos": Proyectos
   };
 </script>

@@ -30,7 +30,6 @@ public class ProyectoDTO {
     @NotNull(message = "Debe asignar un líder al proyecto")
     private Long idLider;
 
-
     // Campos de solo lectura para la respuesta
     private LocalDateTime fechaFinReal;
     private String nombreLider;
@@ -51,32 +50,4 @@ public class ProyectoDTO {
     private LocalDateTime fechaFinRealProyecto; // Fecha de fin real calculada a partir de la fecha de fin real de las etapas y actividades
     
     private String motivoCambio; // Motivo del último cambio (para auditoría)
-
 }
-
-
-
-
-
-
-/* package com.ikernell.backend.dto;
-
-import lombok.Data;
-import java.time.LocalDate;
-
-@Data
-public class ProyectoDTO {
-    private Long idProyecto;
-    private String nombre;
-    private String descripcion;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
-    private String estado;
-    
-    // Datos simplificados del Líder (HU-003)
-    private Long idLider;
-    private String nombreLider;
-
-    // Costo total del proyecto (suma de costos estimados de actividades)
-    private Double costoTotal;
-} */

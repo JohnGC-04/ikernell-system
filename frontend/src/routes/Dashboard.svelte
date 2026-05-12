@@ -7,12 +7,24 @@
   import ModalNuevoProyecto from "../lib/components/ModalNuevoProyecto.svelte";
 
   interface Proyecto {
-    id: number;
+    idProyecto: number; // Coincide con tu DTO
     nombre: string;
+    descripcion: string;
     presupuesto: number;
     estado: string;
-    id_lider: number;
+    idLider: number;
+    nombreLider?: string;
+    // ... otros campos opcionales del DTO
   }
+
+  // Este es el objeto que enviarás en el POST
+  let nuevoProyecto = {
+    nombre: "",
+    descripcion: "",
+    presupuesto: 0.1,
+    estado: "Pendiente",
+    idLider: 1,
+  };
 
   let proyectos: Proyecto[] = [];
   let loading = true;
@@ -45,18 +57,18 @@
     }
 
     try {
-    const res = await api.get('/proyectos');
-    proyectos = res.data;
-} catch (err) {
-    // ESTO ES CLAVE:
-    if (axios.isAxiosError(err)) {
+      const res = await api.get("/proyectos");
+      proyectos = res.data;
+    } catch (err) {
+      // ESTO ES CLAVE:
+      if (axios.isAxiosError(err)) {
         console.error("Status:", err.response?.status);
         console.error("Data del error:", err.response?.data);
-        
+
         // Comenta el push para que no te saque de la página y puedas leer el log
-        // push("/"); 
+        // push("/");
+      }
     }
-}
   });
 </script>
 
@@ -118,37 +130,33 @@
               <tr class="hover:bg-gray-700/30 transition-colors">
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm text-indigo-400 font-mono"
-                  >#{p.id}</td
                 >
+                  #{p.idProyecto}
+                </td>
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-200"
-                  >{p.nombre}</td
                 >
+                  <button
+                    on:click={() => push(`/proyecto/${p.idProyecto}`)}
+                    class="hover:text-indigo-400 transition-colors"
+                  >
+                    {p.nombre}
+                  </button>
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                   {p.presupuesto
                     ? `$${p.presupuesto.toLocaleString("es-CO")}`
-                    : "No asignado"}
+                    : "0"}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  {#if p.estado === "ACTIVO"}
-                    <span
-                      class="px-2 py-1 text-xs font-bold rounded-full bg-green-900 text-green-200 ring-1 ring-green-500/50"
-                    >
-                      ● ACTIVO
-                    </span>
-                  {:else if p.estado === "PLANIFICACION"}
-                    <span
-                      class="px-2 py-1 text-xs font-bold rounded-full bg-amber-900 text-amber-200 ring-1 ring-amber-500/50"
-                    >
-                      ● PLANIFICACIÓN
-                    </span>
-                  {:else}
-                    <span
-                      class="px-2 py-1 text-xs font-bold rounded-full bg-gray-700 text-gray-300"
-                    >
-                      {p.estado}
-                    </span>
-                  {/if}
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-bold
+        {p.estado === 'Completado'
+                      ? 'bg-green-900 text-green-300'
+                      : 'bg-indigo-900 text-indigo-300'}"
+                  >
+                    {p.estado}
+                  </span>
                 </td>
                 <td
                   class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
@@ -175,8 +183,9 @@
       </div>
     </div>
   </main>
+  <!-- Dashboard.svelte -->
   <ModalNuevoProyecto
     bind:show={mostrarModal}
-    on:proyectoCreado={() => cargarProyectos()}
+    onProyectoCreado={cargarProyectos}
   />
 </div>

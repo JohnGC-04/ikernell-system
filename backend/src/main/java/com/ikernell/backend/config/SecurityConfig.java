@@ -61,8 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/etapas/**").authenticated()
                         .requestMatchers("/api/actividades/**").authenticated()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agregar el filtro JWT antes
-                                                                                         // del filtro de autenticación
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agregar el filtro JWT antes del filtro de autenticación
 
         return http.build();
     }

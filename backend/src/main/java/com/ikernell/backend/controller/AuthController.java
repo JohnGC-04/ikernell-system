@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ikernell.backend.dto.LoginRequest;
-import com.ikernell.backend.entity.Usuario;
 import com.ikernell.backend.repository.UsuarioRepository;
 import com.ikernell.backend.security.JwtUtil;
 

@@ -28,8 +28,7 @@ public class ProyectoService {
     private final UsuarioRepository usuarioRepository; // Repositorio para acceder a los datos de usuarios (líderes)
     private final EtapaRepository etapaRepository; // Repositorio para acceder a los datos de etapas
     private final ActividadRepository actividadRepository; // Repositorio para acceder a los datos de actividades
-    private final NotificacionRepository notificacionRepository; // Repositorio para acceder a los datos de
-                                                                 // notificaciones
+    private final NotificacionRepository notificacionRepository; // Repositorio para acceder a los datos de notificaciones
     private final AuditoriaRepository auditoriaRepository; // Repositorio para acceder a los datos
 
     public ProyectoService(ProyectoRepository proyectoRepository, UsuarioRepository usuarioRepository,

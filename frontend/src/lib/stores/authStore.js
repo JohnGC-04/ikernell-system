@@ -1,8 +1,7 @@
 import { writable } from 'svelte/store';
 
 // Creamos un store que inicia buscando el token en el navegador
-const tokenPersistido = localStorage.getItem('token');
-
+const tokenPersistido = localStorage.getItem('token') || sessionStorage.getItem('token');
 export const auth = writable({
     isLoggedIn: !!tokenPersistido,
     token: tokenPersistido || null,

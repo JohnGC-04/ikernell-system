@@ -42,12 +42,13 @@ public class ProyectoController {
     }
 
     @GetMapping
+    @PreAuthorize("permitAll()") // Prueba esto temporalmente para descartar que sea el controlador
     public ResponseEntity<List<ProyectoDTO>> listar() {
         return ResponseEntity.ok(proyectoService.listarTodos());
     }
 
     @GetMapping("/{id}/costo-total")
-@PreAuthorize("hasAuthority('LIDER')") // Cambiado de hasRole
+    @PreAuthorize("hasAuthority('LIDER')") // Cambiado de hasRole
     public ResponseEntity<Double> obtenerCostoTotal(@PathVariable Long id) {
         return ResponseEntity.ok(proyectoService.calcularCostoTotal(id));
     }

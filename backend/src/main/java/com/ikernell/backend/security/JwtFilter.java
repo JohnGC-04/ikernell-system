@@ -36,17 +36,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
+        // Agregamos la lógica para extraer el token del encabezado
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+            String token = authHeader.substring(7); // <--- AQUÍ SE DECLARA LA VARIABLE
 
             try {
                 if (jwtUtil.validateToken(token)) {
                     String email = jwtUtil.extractEmail(token);
-                    String rol = jwtUtil.extractRol(token); // Una sola declaración
+                    String rol = jwtUtil.extractRol(token);
 
-                    // Guardamos la autoridad tal cual viene en el token ("COORDINADOR")
+                    // Aseguramos que la autoridad sea limpia
                     List<SimpleGrantedAuthority> authorities = Collections
-                            .singletonList(new SimpleGrantedAuthority(rol));
+                            .singletonList(new SimpleGrantedAuthority(rol.trim()));
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             email, null, authorities);
@@ -54,13 +55,16 @@ public class JwtFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                    // Logs útiles para depurar en IntelliJ/Eclipse
+                    // Log de depuración
                     System.out.println("AUTH SUCCESS: " + email + " con rol: " + rol);
                 }
             } catch (Exception e) {
-                System.out.println("AUTH ERROR: Token inválido o mal formado");
+                System.out.println("AUTH ERROR: Error procesando el token: " + e.getMessage());
             }
         }
+
+        // IMPORTANTE: Este debe ir fuera del if para que las peticiones sin token (como
+        // Login) sigan su curso
         filterChain.doFilter(request, response);
     }
 }

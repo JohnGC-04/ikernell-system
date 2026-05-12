@@ -1,7 +1,6 @@
 package com.ikernell.backend.controller;
 
 import com.ikernell.backend.dto.ActividadDTO;
-import com.ikernell.backend.entity.Actividad;
 import com.ikernell.backend.service.ActividadService;
 
 import jakarta.validation.Valid;
